@@ -37,6 +37,8 @@ def preprocess_real_image(image_path):
     img_normalized = img_resized.astype(np.float32) / 255.0
     img_normalized = np.expand_dims(img_normalized, axis=0)
     return img_normalized
+
+
 def preprocess_image(image_path):
     img = cv2.imread(image_path)
     img_cropped = img[60:190, 60:190]  # Crop to focus on face area
