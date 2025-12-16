@@ -4,6 +4,7 @@ import numpy as np
 import cv2
 import matplotlib.pyplot as plt
 
+import argparse
 def preprocess_lfw(input_dir,use_binarization=False):
     if not os.path.exists(input_dir):
         print(f"input directory {input_dir} does not exist.")
@@ -27,5 +28,16 @@ def preprocess_lfw(input_dir,use_binarization=False):
 
 
 if __name__ == "__main__":
-    input_directory = os.path.join('TrainingSet')
+    parser = argparse.ArgumentParser(description="png to npy converter")
+    group = parser.add_mutually_exclusive_group()
+    
+    group.add_argument('-training', action='store_true', help='Run on Training Set')
+    group.add_argument('-validation', action='store_true', help='Run on Validation Set')
+    args = parser.parse_args()
+    if args.training:
+        print(f"--- Preprocessing Training Set ---")
+        input_directory = os.path.join('TrainingSet')
+    elif args.validation:
+        print(f"--- Preprocessing Validation Set ---")
+        input_directory = os.path.join('ValidationSet', 'RawFaces')
     preprocess_lfw(input_directory)

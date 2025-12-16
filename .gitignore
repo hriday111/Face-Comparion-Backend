@@ -1,4 +1,4 @@
-Scripts/
+Scripts/``
 share/
 Lib/
 Include/
@@ -8,7 +8,7 @@ temp.py
 __pycache__/
 *.py[codz]
 *$py.class
-
+*.keras
 # C extensions
 *.so
 

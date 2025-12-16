@@ -2,14 +2,30 @@
 import os
 import random
 import csv
-import glob
+import pandas as pd
 
-def generate_image_pairs(input_dir, output_csv="lfw_pairs.csv"):
+def move_last_n(source_file, dest_file, n): #moves last n lines from source_file to dest_file
+    df = pd.read_csv(source_file)
+    
+    if n > len(df):
+        n = len(df)
+
+    rows_to_move = df.tail(n)
+    rows_to_keep = df.iloc[:-n]
+
+    rows_to_keep.to_csv(source_file, index=False)
+
+    header_mode = not os.path.isfile(dest_file)
+    rows_to_move.to_csv(dest_file, mode='a', header=header_mode, index=False)
+
+    print(f"Moved {n} lines from {source_file} to {dest_file}")
+
+def generate_image_pairs(input_dir, output_csv="lfw_pairs.csv", extension='npy'):
     people_dict = {}
 
     for root, dirs, files in os.walk(input_dir):
         for file in files:
-            if file.endswith('.npy'):
+            if file.endswith('.'+extension):
                 person_name = os.path.basename(os.path.dirname(os.path.join(root, file)))
                 if person_name not in people_dict:
                     people_dict[person_name] = []
@@ -43,5 +59,13 @@ def generate_image_pairs(input_dir, output_csv="lfw_pairs.csv"):
         writer.writerows(pairs_data)
 
 if __name__ == "__main__":
-    #lfw_dir = os.path.join('TrainingSet', 'lfw-deepfunneled', 'lfw-deepfunneled')
-    generate_image_pairs(input_dir='TrainingSet', output_csv=os.path.join('TrainingSet', 'lfw_pairs.csv'))
+
+    generate_image_pairs(input_dir=os.path.join('TrainingSet'), output_csv=os.path.join('TrainingSet', 'lfw_pairs.csv'), extension='npy')
+    move_last_n(os.path.join('TrainingSet', 'lfw_pairs.csv'), os.path.join('TrainingSet', 'val.csv'), 100)
+    generate_image_pairs(input_dir=os.path.join('ValidationSet', 'RawFaces'), output_csv=os.path.join('ValidationSet', 'RawFaces', 'lfw_pairs.csv'), extension='npy')
+
+    generate_image_pairs(input_dir=os.path.join('ValidationSet', 'RawFaces'), output_csv=os.path.join('ValidationSet', 'RawFaces', 'lfw_pairs_img.csv'), extension='jpg')
+
+    
+
+    print("Nothing enabled")
